@@ -2,11 +2,14 @@ from django.contrib.auth import logout, login
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.views import LoginView
 from django.core.paginator import Paginator
+from django.forms import model_to_dict
 from django.http import *
 from django.shortcuts import *
 from django.urls import reverse_lazy
 from django.views.generic import ListView, DetailView, CreateView, FormView
 from django.contrib.auth.mixins import LoginRequiredMixin
+from rest_framework.response import Response
+from rest_framework.views import APIView
 
 from .forms import *
 from .models import *
@@ -15,11 +18,53 @@ from rest_framework import viewsets
 
 from .serializers import MedicinesSerializer
 from .models import Medicines
+from rest_framework import generics
 
 
-class MedicinesViewSet(viewsets.ModelViewSet):
-    queryset = Medicines.objects.all().order_by('title')
+class MedicinesAPIList(generics.ListCreateAPIView):
+    queryset = Medicines.objects.all()
     serializer_class = MedicinesSerializer
+
+class MedicinesAPIUpdate(generics.UpdateAPIView):
+    queryset = Medicines.objects.all()
+    serializer_class = MedicinesSerializer
+
+
+class MedicinesAPIDetailView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Medicines.objects.all()
+    serializer_class = MedicinesSerializer
+
+
+# отправка get запроса для получения списка с объектами моделей
+# class MedicinesAPIView(APIView):
+#     def get(self, request):
+#         w = Medicines.objects.filter()
+#         return Response({'posts': MedicinesSerializer(w,  read_only=True).data})
+#
+#         # return Response({'posts':list(w)})
+#
+#
+#
+#     # отправка post запроса на сервер способом ключ/значение для добавления в БД и возвращает то что было добавлено
+#     def post(self, request):
+#         post_new = Medicines.objects.create(
+#             title=request.data['title'],
+#             content=request.data['content'],
+#             cat=request.data['cat'],
+#
+#         )
+#         return Response({'post': model_to_dict(post_new)})
+#
+#
+# # class MedicinesAPIView(generics.ListAPIView):
+# #     queryset = Medicines.objects.all()
+# #     serializer_class = MedicinesSerializer
+
+# class MedicinesViewSet(viewsets.ModelViewSet):
+#     queryset = Medicines.objects.all().order_by('title')
+#     serializer_class = MedicinesSerializer
+
+
 
 
 class MedicinesHome(DataMixin, ListView):

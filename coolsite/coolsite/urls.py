@@ -13,19 +13,27 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
+
 from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import path
+from rest_framework import routers
 
 from coolsite import settings
-from medicines.views import *
-from django.urls import path, include
 
+from medicines.views import  *
+from django.urls import path, include
+#
+# router = routers.DefaultRouter()
+# router.register(r'medicines', views.MedicinesViewSet)
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('captcha/', include('captcha.urls')),
     path('', include('medicines.urls')),
+    path('api/v1/medicineslist/',MedicinesAPIList.as_view()),
+    path('api/v1/medicineslist/<int:pk>/',MedicinesAPIUpdate.as_view()),
+    path('api/v1/medicinesdetail/<int:pk>/',MedicinesAPIDetailView.as_view()),
 ]
 
 if settings.DEBUG:

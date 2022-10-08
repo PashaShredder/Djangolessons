@@ -30,9 +30,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 DEBUG = True
 
 ALLOWED_HOSTS = ['127.0.0.1']
-# BOT_TOKEN = '5633470689:AAFfkf1XV4QMQOJ3mu_zYFTtH5AU-ZqYNaY'
-# BOT_URL ='https://api.telegram.org/bot%s/'%BOT_TOKEN
-# BOT_CHAT_ID='YOUR CHAT ID'
+
 
 # Application definition
 
@@ -47,6 +45,7 @@ INSTALLED_APPS = [
     'captcha',
     'medicines.apps.MedicinesConfig',
     'rest_framework',
+
 ]
 
 MIDDLEWARE = [
