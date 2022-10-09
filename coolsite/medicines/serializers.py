@@ -7,22 +7,23 @@ from rest_framework.renderers import JSONRenderer
 import medicines
 from .models import Medicines
 
-
-# class MedicinesModel:
-#     def __init__(self, title, content):
-#         self.title = title
-#         self.content = content
-
-
 class MedicinesSerializer(serializers.ModelSerializer):
-    title = serializers.CharField(max_length=255)
-    slug = serializers.SlugField()
-    content = serializers.CharField()
-    photo = serializers.ImageField()
-    time_create = serializers.DateTimeField()
-    time_update = serializers.DateTimeField()
-    is_published = serializers.BooleanField(default=True)
-    cat = serializers.PrimaryKeyRelatedField(read_only=True)
+    user = serializers.HiddenField(default=serializers.CurrentUserDefault())
+
+    class Meta:
+        model = Medicines
+        fields = "__all__"
+
+#
+# class MedicinesSerializer(serializers.ModelSerializer):
+#     title = serializers.CharField(max_length=255)
+#     slug = serializers.SlugField()
+#     content = serializers.CharField()
+#     photo = serializers.ImageField()
+#     time_create = serializers.DateTimeField()
+#     time_update = serializers.DateTimeField()
+#     is_published = serializers.BooleanField(default=True)
+#     cat = serializers.PrimaryKeyRelatedField(read_only=True)
 
 
     # # преобразование(кодирование) объектов MedicinesModel в json (JSONRenderer преобразовывает в байтовую строку для дальнейшего парсинга)
@@ -40,15 +41,18 @@ class MedicinesSerializer(serializers.ModelSerializer):
     #     serializer = MedicinesSerializer(data=data)
     #     serializer.is_valid()
     #     print(serializer.validated_data)
-    class Meta:
-        model = Medicines
-        # fields = "__all__"
-        fields = ['title',
-                  'slug',
-                  'content',
-                  'photo',
-                  'time_create',
-                  'time_update',
-                  'is_published',
-                  'cat'
-                  ]
+
+
+    # class Meta:
+    #     model = Medicines
+    #     # fields = "__all__"
+    #     fields = ['id',
+    #               'title',
+    #               'slug',
+    #               'content',
+    #               'photo',
+    #               'time_create',
+    #               'time_update',
+    #               'is_published',
+    #               'cat'
+    #               ]

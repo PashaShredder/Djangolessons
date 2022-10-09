@@ -5,15 +5,6 @@ from .views import *
 from rest_framework import routers
 from . import views
 
-# router = routers.DefaultRouter()
-# router.register(r'medicines', views.MedicinesViewSet)
-
-# urlpatterns = [
-#     path('', include(router.urls)),
-#     path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
-#     # path('some-api/', Medicines.objects.filter({'get': 'list'}))
-#
-# ]
 
 urlpatterns = [
     path('', MedicinesHome.as_view(), name='home'),

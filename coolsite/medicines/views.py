@@ -4,66 +4,81 @@ from django.contrib.auth.views import LoginView
 from django.core.paginator import Paginator
 from django.forms import model_to_dict
 from django.http import *
+from django.http import request
 from django.shortcuts import *
 from django.urls import reverse_lazy
 from django.views.generic import ListView, DetailView, CreateView, FormView
 from django.contrib.auth.mixins import LoginRequiredMixin
+from rest_framework.authentication import TokenAuthentication
+from rest_framework.decorators import action
+from rest_framework.pagination import PageNumberPagination
+from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAdminUser, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework.viewsets import GenericViewSet
 
 from .forms import *
 from .models import *
+from .permissions import IsAdminOrReadOnly, IsOwnerOrReadOnly
 from .utils import *
-from rest_framework import viewsets
+from rest_framework import viewsets, mixins
 
 from .serializers import MedicinesSerializer
 from .models import Medicines
 from rest_framework import generics
 
+# база CRUD
+class MedicinesAPIListPagination(PageNumberPagination):
+    page_size = 2
+    page_size_query_param = 'page_size'
+    max_page_size = 1000
+
 
 class MedicinesAPIList(generics.ListCreateAPIView):
     queryset = Medicines.objects.all()
     serializer_class = MedicinesSerializer
+    permission_classes = (IsAuthenticatedOrReadOnly,)
+    pagination_class = MedicinesAPIListPagination
+
+
+
 
 class MedicinesAPIUpdate(generics.UpdateAPIView):
     queryset = Medicines.objects.all()
     serializer_class = MedicinesSerializer
+    permission_classes = (IsAuthenticated,)
+    # authentication_classes = (TokenAuthentication,)
 
 
-class MedicinesAPIDetailView(generics.RetrieveUpdateDestroyAPIView):
+class MedicinesAPIDestroy(generics.RetrieveUpdateDestroyAPIView):
     queryset = Medicines.objects.all()
     serializer_class = MedicinesSerializer
+    permission_classes = (IsAdminOrReadOnly,)
 
 
-# отправка get запроса для получения списка с объектами моделей
-# class MedicinesAPIView(APIView):
-#     def get(self, request):
-#         w = Medicines.objects.filter()
-#         return Response({'posts': MedicinesSerializer(w,  read_only=True).data})
-#
-#         # return Response({'posts':list(w)})
-#
-#
-#
-#     # отправка post запроса на сервер способом ключ/значение для добавления в БД и возвращает то что было добавлено
-#     def post(self, request):
-#         post_new = Medicines.objects.create(
-#             title=request.data['title'],
-#             content=request.data['content'],
-#             cat=request.data['cat'],
-#
-#         )
-#         return Response({'post': model_to_dict(post_new)})
-#
-#
-# # class MedicinesAPIView(generics.ListAPIView):
-# #     queryset = Medicines.objects.all()
-# #     serializer_class = MedicinesSerializer
 
-# class MedicinesViewSet(viewsets.ModelViewSet):
-#     queryset = Medicines.objects.all().order_by('title')
+#
+# class MedicinesViewSet(mixins.CreateModelMixin,
+#                        mixins.RetrieveModelMixin,
+#                        mixins.UpdateModelMixin,
+#                        mixins.ListModelMixin,
+#                        GenericViewSet):
+#     queryset = Medicines.objects.all()
 #     serializer_class = MedicinesSerializer
-
+#
+#     def get_queryset(self):
+#         pk = self.kwargs.get("pk")
+#
+#         if not pk:
+#             return Medicines.objects.all()[:3]
+#         return Medicines.objects.all().filter(pk=pk)
+#
+#
+#
+#     @action(methods=['get'], detail=True)
+#     def category(self, request, pk=None):
+#         cats = Category.objects.get(pk=pk)
+#         return Response({'cats': cats.name})
 
 
 
@@ -100,11 +115,11 @@ def about(request):
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
     return render(request, 'medicines/about.html', {'page_obj': page_obj, 'menu': menu,
-                                                'title': 'Данный сайт создан в информационном формате для ознакомления '
-                                                         'и соблюдения фармацевтической опеки. При помощи нашего ресурса '
-                                                         'Вы можете изучить состав, показания, противопоказания и способ '
-                                                         'применения лекарственных средств. '
-                                                         'Перед приобритением и приминением требуется консультация врача!'})
+                                                    'title': 'Данный сайт создан в информационном формате для ознакомления '
+                                                             'и соблюдения фармацевтической опеки. При помощи нашего ресурса '
+                                                             'Вы можете изучить состав, показания, противопоказания и способ '
+                                                             'применения лекарственных средств. '
+                                                             'Перед приобритением и приминением требуется консультация врача!'})
 
 
 class AddPage(LoginRequiredMixin, DataMixin, CreateView):
