@@ -90,7 +90,8 @@ class MedicinesHome(DataMixin, ListView):
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(**kwargs)
         c_def = self.get_user_context(title="Главная страница")
-        return dict(list(context.items()) + list(c_def.items()))
+        context.update(c_def)
+        return context
 
     def get_queryset(self):
         return Medicines.objects.filter(is_published=True).select_related('cat')
@@ -132,7 +133,8 @@ class AddPage(LoginRequiredMixin, DataMixin, CreateView):
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(**kwargs)
         c_def = self.get_user_context(title="Добавление статьи")
-        return dict(list(context.items()) + list(c_def.items()))
+        context.update(c_def)
+        return context
 
 
 # def addpage(request):
@@ -157,7 +159,8 @@ class ContactFormView(DataMixin, FormView):
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(**kwargs)
         c_def = self.get_user_context(title="Обратная связь")
-        return dict(list(context.items()) + list(c_def.items()))
+        context.update(c_def)
+        return context
 
     def form_valid(self, form):
         print(form.cleaned_data)
@@ -193,7 +196,8 @@ class ShowPost(DataMixin, DetailView):
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(**kwargs)
         c_def = self.get_user_context(title=context['post'])
-        return dict(list(context.items()) + list(c_def.items()))
+        context.update(c_def)
+        return context
 
 
 class MedicinesCategory(DataMixin, ListView):
@@ -210,7 +214,8 @@ class MedicinesCategory(DataMixin, ListView):
         c = Category.objects.get(slug=self.kwargs['cat_slug'])
         c_def = self.get_user_context(title='Категория - ' + str(c.name),
                                       cat_selected=c.pk)
-        return dict(list(context.items()) + list(c_def.items()))
+        context.update(c_def)
+        return context
 
 
 # def show_category(request, cat_id):
@@ -237,7 +242,8 @@ class RegisterUser(DataMixin, CreateView):
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(**kwargs)
         c_def = self.get_user_context(title="Регистрация")
-        return dict(list(context.items()) + list(c_def.items()))
+        context.update(c_def)
+        return context
 
     def form_valid(self, form):
         user = form.save()
@@ -252,7 +258,8 @@ class LoginUser(DataMixin, LoginView):
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(**kwargs)
         c_def = self.get_user_context(title="Авторизация")
-        return dict(list(context.items()) + list(c_def.items()))
+        context.update(c_def)
+        return context
 
     def get_success_url(self):
         return reverse_lazy('home')
